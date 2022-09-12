@@ -1,0 +1,56 @@
+version: '3.7'
+services:
+    mysql:
+        image: mariadb
+        restart: always
+        ports:
+            - "3306:3306"
+        volumes:
+            - datavolume01:/var/lib/mysql
+            - /etc/localtime:/etc/localtime
+        environment:
+           MYSQL_ROOT_PASSWORD: Quaidaa6sdasgdsgftsrtewtrtFFSDF435435
+           MYSQL_DATABASE: asterisk
+    nginx:
+        image: nginx:latest
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./nginx/conf.d:/etc/nginx/
+            - ./asterisk/records:/var/www/mp3
+            - /etc/localtime:/etc/localtime
+    fastagi:
+        image: java:8
+        restart: always
+        ports:
+            - "4573:4573"
+        volumes:
+            - ./fastagi:/usr/src/myapp
+            - /etc/localtime:/etc/localtime
+        command: bash -c "cd /usr/src/myapp && java -cp asterisk-java.jar:mongo.jar:. org.asteriskjava.fastagi.DefaultAgiServer"
+    kaldi:
+        image: alphacep/kaldi-ru:latest
+        restart: always
+        ports:
+            - "2700:2700"
+    asterisk:
+        image: evocc/callcenterv2
+        restart: always
+        volumes:
+            - ./asterisk/etc:/etc/asterisk
+            - ./asterisk/sounds/mfc:/var/lib/asterisk/sounds/mfc
+            - ./asterisk/records:/var/spool/asterisk/monitor
+            - ./asterisk/odbc.ini:/etc/odbc.ini
+            - /etc/localtime:/etc/localtime
+        network_mode: "host"
+networks:
+    default:
+      ipam:
+        driver: default
+        config:
+          - subnet: 10.99.199.0/24
+            gateway: 10.99.199.1
+volumes:
+    datavolume01: {}
