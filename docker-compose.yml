@@ -9,8 +9,7 @@ services:
             - datavolume01:/var/lib/mysql
             - /etc/localtime:/etc/localtime
         environment:
-           MYSQL_ROOT_PASSWORD: Quaidaa6sdasgdsgftsrtewtrtFFSDF435435
-           MYSQL_DATABASE: asterisk
+           MARIADB_ROOT_PASSWORD: Quaidaa6sdasgdsgftsrtewtrtFFSDF435435
     nginx:
         image: nginx:latest
         restart: always
@@ -22,7 +21,7 @@ services:
             - ./asterisk/records:/var/www/mp3
             - /etc/localtime:/etc/localtime
     fastagi:
-        image: java:8
+        image: openjdk:8
         restart: always
         ports:
             - "4573:4573"
@@ -43,6 +42,7 @@ services:
             - ./asterisk/sounds/mfc:/var/lib/asterisk/sounds/mfc
             - ./asterisk/records:/var/spool/asterisk/monitor
             - ./asterisk/odbc.ini:/etc/odbc.ini
+            - ./asterisk/odbcinst.ini:/etc/odbcinst.ini
             - /etc/localtime:/etc/localtime
         network_mode: "host"
 networks:

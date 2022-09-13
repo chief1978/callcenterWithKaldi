@@ -8,7 +8,6 @@ RUN yum -y update \
         epel-release \
         espeak \
         dmidecode \
-        gcc \
         gcc-c++ \
         ncurses-devel \
         libxml2-devel \
@@ -28,7 +27,6 @@ RUN yum -y update \
         libedit \
         libedit-devel \
         lua \
-        # lua-devel \
         lame \
         java \
         sox \
@@ -38,28 +36,20 @@ RUN yum -y update \
     && yum clean all \
     && pip3 install pyst2 websocket-client \
     && cd /tmp \
-    # Download and install cmake
-    && git clone https://github.com/Kitware/CMake.git \
-    && cd CMake && ./bootstrap && make && sudo make install \
     # Download and install mariaDB connector
-    # && wget https://dlm.mariadb.com/2454028/Connectors/odbc/connector-odbc-3.1.17/mariadb-connector-odbc-3.1.17-centos74-amd64.tar.gz \
-    # && tar zxpf mariadb-connector-odbc-3.1.17-centos74-amd64.tar.gz \
-    # && cd mariadb-connector-odbc-3.1.17-centos74-amd64 \
-    && git clone https://github.com/MariaDB/mariadb-connector-odbc.git \
-    && cd mariadb-connector-odbc && git checkout 3.1.17 \
-    && cd .. && mkdir build && cd build \
-    && cmake ../mariadb-connector-odbc/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_SSL=OPENSSL \
-    && cmake --build . --config RelWithDebInfo \
-    && make install \
+    && cd ..  && mkdir odbc_package && cd odbc_package \
+    && wget https://downloads.mariadb.com/Connectors/odbc/connector-odbc-3.1.7/mariadb-connector-odbc-3.1.7-ga-rhel7-x86_64.tar.gz \
+    && tar -xvzf mariadb-connector-odbc-3.1.7-ga-rhel7-x86_64.tar.gz \
+    && install lib64/libmaodbc.so /usr/lib64/ \
+    && install -d /usr/lib64/mariadb/ \
+    && install -d /usr/lib64/mariadb/plugin/ \
+    && install lib64/mariadb/plugin/auth_gssapi_client.so /usr/lib64/mariadb/plugin/ \
+    && install lib64/mariadb/plugin/caching_sha2_password.so /usr/lib64/mariadb/plugin/ \
+    && install lib64/mariadb/plugin/client_ed25519.so /usr/lib64/mariadb/plugin/ \
+    && install lib64/mariadb/plugin/dialog.so /usr/lib64/mariadb/plugin/ \
+    && install lib64/mariadb/plugin/mysql_clear_password.so /usr/lib64/mariadb/plugin/ \
+    && install lib64/mariadb/plugin/sha256_password.so /usr/lib64/mariadb/plugin/ \
     && cd /tmp \
-    # Download and install luarock
-    # && wget https://luarocks.org/releases/luarocks-3.8.0.tar.gz \
-    # && tar zxpf luarocks-3.8.0.tar.gz \
-    # && cd luarocks-3.8.0 \
-    # && ./configure --with-lua-include=/usr/local/include \
-    # && make \
-    # && make install \
-    # && cd /tmp \
     # Download asterisk
     && git clone -b 13.26 https://gerrit.asterisk.org/asterisk \
     && cd asterisk/contrib/scripts \
